@@ -1,0 +1,1 @@
+# a simple ML project utilizing AWS SageMaker to train a algorithm for classifying spam or ham (non spam) emails. Goal is to use deep features (embeddings) integrated with hand-made text features. Endpoint or download to dataset is [here](https://huggingface.co/datasets/mshenoda/spam-messages)
