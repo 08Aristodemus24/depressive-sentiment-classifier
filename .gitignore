@@ -1,2 +1,7 @@
 /.env
 /figures & images/
+
+/infra/*.lock.hcl
+/infra/*.tfstate
+/infra/*.backup
+/infra/.terraform/
