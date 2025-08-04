@@ -13,6 +13,10 @@ elif [ $1 == "destroy" ]; then
     echo "Initiating infrastructure destruction"
     terraform destroy -auto-approve
 
+elif [ $1 == "plan" ]; then
+    echo "Running plan before infrastructure build"
+    terraform plan
+
 else
     echo "No command executed. Please use 'setup' or 'destroy' as an argument."
 
