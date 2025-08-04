@@ -1,6 +1,7 @@
 import pickle
 import json
 import pandas as pd
+import numpy as np
 
 # for NLP data
 def load_corpus(path: str):
@@ -88,6 +89,26 @@ def load_model(path: str):
         file.close()
 
     return model
+
+def split_into_train_test(df: pd.DataFrame, train_ratio: float=0.65, seed: int=0):
+    """
+    split dataframe into train, validation, and testing sets
+    """
+
+
+    n_rows = df.shape[0] 
+    shuffled_df = df.sample(frac=1, random_state=seed)
+
+    try:
+        train_size = int(train_ratio * n_rows)
+        # print(train_size)
+        train_df = shuffled_df[:train_size]
+        test_df = shuffled_df[train_size:]
+        return train_df, test_df 
+
+    except Exception as e:
+        print(f"Error {e} has occured")
+        return
 
 def get_top_models(models_train, models_cross, pool_size: int=10, model_type: str="regressor"):
     """
