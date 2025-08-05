@@ -31,7 +31,12 @@ def encode_features(X):
     enc_feats = enc.fit_transform(X)
     return enc_feats, enc
 
-def normalize_train_cross(X_trains, X_cross, scaler='min_max'):
+def normalize_train_cross(
+    X_trains: pd.DataFrame, 
+    X_cross: pd.DataFrame, 
+    X_tests: pd.DataFrame, 
+    scaler="min_max"
+):
     """
     normalizes training and cross validation datasets using either
     a standard z-distribution or min max scaler
@@ -39,17 +44,29 @@ def normalize_train_cross(X_trains, X_cross, scaler='min_max'):
     args:
         X_trains - 
         X_cross - 
+        X_tests -
         scaler - scaler to use which can either be 'min_max' or 'standard'
 
     used during training, validation, and testing/deployment (since
     scaler is saved and later used)
     """
+    # get columns of df before normalization as the df
+    # will get converted to a numpy array during normalization
+    df_columns = X_trains.columns
 
-    temp = MinMaxScaler() if scaler is 'min_max' else StandardScaler()
+    # create normalizer object
+    temp = MinMaxScaler() if scaler == "min_max" else StandardScaler()
     X_trains_normed = temp.fit_transform(X_trains)
     X_cross_normed = temp.transform(X_cross)
+    X_tests_normed = temp.transform(X_tests)
 
-    return X_trains_normed, X_cross_normed, temp
+    # revert numpy arrays to dataframes
+    data_splits = [
+        pd.DataFrame(X_normed, columns=df_columns) 
+        for X_normed in [X_trains_normed, X_cross_normed, X_tests_normed]
+    ]
+
+    return data_splits + [temp]
 
 def lower_words(corpus: str):
     """
@@ -389,7 +406,7 @@ def translate_labels(labels, translations: dict={'DER': 'Derogatory',
     translated_labels = v_func(labels)
     return translated_labels
 
-def vectorize_sent(X_trains, X_tests):
+def vectorize_sent(X_trains, X_cross, X_tests):
     """
     vectorizes a set of sentences either using term frequency
     inverse document frequency or by count/frequency of a word
@@ -401,6 +418,7 @@ def vectorize_sent(X_trains, X_tests):
     vectorizer = TfidfVectorizer()
     vectorizer.fit(X_trains)
     X_trains_vec = vectorizer.transform(X_trains).toarray()
+    X_cross_vec = vectorizer.transform(X_cross).toarray()
     X_tests_vec = vectorizer.transform(X_tests).toarray()
     
-    return X_trains_vec, X_tests_vec, vectorizer
+    return X_trains_vec, X_cross_vec, X_tests_vec, vectorizer

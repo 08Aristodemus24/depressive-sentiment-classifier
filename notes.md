@@ -1,3 +1,4 @@
+* works iwth conda with python 3.11.8
 * Yes, you are exactly right. The az login command you run in your terminal is the most common way that Terraform, when configured with the azurerm provider, is able to access and manage your Azure resources.
 
 Here's a breakdown of how that works:
